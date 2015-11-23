@@ -2,23 +2,22 @@ class School
   VERSION = 1
 
   def initialize
-    @grades_students = {}
+    self.grades = {}
   end
 
-  def add(name, grade)
-    unless @grades_students[grade]
-      @grades_students[grade] = []
-      @grades_students = Hash[@grades_students.sort]
-    end
-    @grades_students[grade].push name
-    @grades_students[grade].sort!
+  def add(name, number)
+    grade(number).push(name).sort!
   end
 
   def grade(number)
-    @grades_students[number] || []
+    grades[number] ||= []
   end
 
   def to_h
-    @grades_students
+    Hash[grades.sort]
   end
+
+  private
+
+  attr_accessor :grades
 end
