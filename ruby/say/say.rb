@@ -1,87 +1,88 @@
 class Say
-  attr_reader :number
+  TRILLION = 1_000_000_000_000
+  BILLION = 1_000_000_000
+  MILLION = 1_000_000
+  THOUSAND = 1_000
+  HUNDRED = 100
+
+  NUMBER_NAMES = {
+    0 => 'zero',
+    1 => 'one',
+    2 => 'two',
+    3 => 'three',
+    4 => 'four',
+    5 => 'five',
+    6 => 'six',
+    7 => 'seven',
+    8 => 'eight',
+    9 => 'nine',
+    10 => 'ten',
+
+    11 => 'eleven',
+    12 => 'twelve',
+    13 => 'thirteen',
+    14 => 'fourteen',
+    15 => 'fifteen',
+    16 => 'sixteen',
+    17 => 'seventeen',
+    18 => 'eighteen',
+    19 => 'nineteen',
+
+    20 => 'twenty',
+    30 => 'thirty',
+    40 => 'forty',
+    50 => 'fifty',
+    60 => 'sixty',
+    70 => 'seventy',
+    80 => 'eighty',
+    90 => 'ninety'
+  }
 
   def initialize(number)
-    if number < 0 || number > 999_999_999_999
+    if number < 0 || number >= TRILLION
       raise ArgumentError.new('Number must be positive and less than a trillion')
     end
     @number = number
   end
 
   def in_english
-    return 'zero' if number == 0
-    return 'one' if number == 1
-    return 'two' if number == 2
-    return 'three' if number == 3
-    return 'four' if number == 4
-    return 'five' if number == 5
-    return 'six' if number == 6
-    return 'seven' if number == 7
-    return 'eight' if number == 8
-    return 'nine' if number == 9
-    return 'ten' if number == 10
+    say = []
+    number = @number
 
-    return 'eleven' if number == 11
-    return 'twelve' if number == 12
-    return 'thirteen' if number == 13
-    return 'fourteen' if number == 14
-    return 'fifteen' if number == 15
-    return 'sixteen' if number == 16
-    return 'seventeen' if number == 17
-    return 'eighteen' if number == 18
-    return 'nineteen' if number == 19
+    if number >= BILLION
+      say << to_english(number / BILLION) + ' billion'
+      number %= BILLION
+    end
 
-    return 'twenty' if number == 20
-    return 'thirty' if number == 30
-    return 'forty' if number == 40
-    return 'fifty' if number == 50
-    return 'sixty' if number == 60
-    return 'seventy' if number == 70
-    return 'eighty' if number == 80
-    return 'ninety' if number == 90
+    if number >= MILLION
+      say << to_english(number / MILLION) + ' million'
+      number %= MILLION
+    end
 
-    if number > 999_999_999
-      say = self.class.new(number / 1_000_000_000).in_english + ' billion'
+    if number >= THOUSAND
+      say << to_english(number / THOUSAND) + ' thousand'
+      number %= THOUSAND
+    end
 
-      if number % 1_000_000_000 > 0
-        say += ' ' + self.class.new(number % 1_000_000_000).in_english
-      end
+    if number > 0 || @number == 0
+      say << to_english(number)
+    end
 
+    say.join(' ')
+  end
+
+  private
+
+  def to_english(number)
+    NUMBER_NAMES.each { |value, name| return name if number == value }
+
+    if number >= HUNDRED
+      say = to_english(number / HUNDRED) + ' hundred'
+      say += ' ' + to_english(number % HUNDRED) if number % HUNDRED > 0
       return say
     end
 
-    if number > 999_999
-      say = self.class.new(number / 1_000_000).in_english + ' million'
-
-      if number % 1_000_000 > 0
-        say += ' ' + self.class.new(number % 1_000_000).in_english
-      end
-
-      return say
-    end
-
-    if number > 999
-      say = self.class.new(number / 1_000).in_english + ' thousand'
-
-      if number % 1_000 > 0
-        say += ' ' + self.class.new(number % 1_000).in_english
-      end
-
-      return say
-    end
-
-    if number > 99
-      say = self.class.new(number / 100).in_english + ' hundred'
-
-      if number % 100 > 0
-        say += ' ' + self.class.new(number % 100).in_english
-      end
-
-      return say
-    end
-
-    if number > 20
-      return self.class.new(number - (number % 10)).in_english + '-' + self.class.new(number % 10).in_english
-    end
+    # Tens
+    return to_english(number - (number % 10)) + '-' + to_english(number % 10)
   end
 end
